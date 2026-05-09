@@ -3,28 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ROBO WORLD 3 - MONO</title>
+    <title>ROBO WORLD 3 - SCIENTITHEISM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0a0101; /* 极深红色背景 */
-            --accent-red: #ef4444;
-            --accent-crimson: #991b1b;
-            --text-main: #fecaca; /* 浅粉红文字，增加和谐感 */
+            --bg:        #040824; /* 深邃夜空蓝 */
+            --dream-pink: hsla(304, 100%, 81%, 0.926);
+            --dream-blue: #669eff;
+            --blue-mid:  #0034d1;
+            --purple-glow: rgba(80, 102, 244, 0.3);
+            --text-main: #e5f2ff;
+            --text-dim:  #82a4d3;
+            --ui-line:   rgba(106, 118, 255, 0.263);
         }
 
+        *, *::before, *::after { box-sizing: border-box; }
+
         body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
+            margin: 0; padding: 0;
+            background-color: var(--bg);
             color: var(--text-main);
             overflow-x: hidden;
             font-family: 'Space Grotesk', sans-serif;
             scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior-y: none;
         }
 
-        /* 视差容器 */
+        /* 移除了网格背景设计，仅保留容器 */
+
         .parallax-element {
             will-change: transform;
             position: absolute;
@@ -32,326 +40,368 @@
             width: 100%;
         }
 
-        /* 巨型背景垂直文字 */
         .bg-vertical-text {
             position: fixed;
             top: 50%;
             left: 5%;
             transform: translateY(-50%);
             writing-mode: vertical-rl;
-            text-orientation: uppercase;
             font-family: 'Orbitron', sans-serif;
-            font-size: 12vh;
+            font-size: 14vh;
             font-weight: 900;
-            letter-spacing: 0.5em;
-            color: rgba(239, 68, 68, 0.04);
+            letter-spacing: 0.6em;
+            color: rgba(255, 126, 185, 0.03); /* 淡粉色背景字 */
             white-space: nowrap;
             z-index: -1;
             pointer-events: none;
+            text-transform: uppercase;
         }
 
-        /* 科幻标题 */
         .scifi-title {
             font-family: 'Orbitron', sans-serif;
             text-transform: uppercase;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.25em;
         }
 
-        /* 模拟扫描线效果 */
+        /* 粉蓝渐变文字 */
+        .dreamy-gradient-text {
+            background: linear-gradient(90deg, #000ed8 0%, #7db5ff 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            display: inline-block;
+            filter: drop-shadow(0 0 8px rgba(255, 126, 185, 0.3));
+        }
+
         .scanline {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent 50%, rgba(255, 0, 0, 0.03) 50%);
+            background: linear-gradient(to bottom, transparent 50%, rgba(122, 252, 255, 0.01) 50%);
             background-size: 100% 4px;
             z-index: 50;
             pointer-events: none;
         }
 
-        /* 星空背景 */
         .universe {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle at 50% 50%, #1a0505 0%, #0a0101 100%);
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(255, 126, 185, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(122, 137, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 50% 50%, #05081a 0%, #020410 100%);
             z-index: -2;
         }
 
         .star {
             position: absolute;
-            background: #fecaca;
             border-radius: 50%;
         }
 
-        /* 装饰性UI元素 */
         .ui-decoration {
             font-family: 'Orbitron', sans-serif;
             font-size: 8px;
-            color: rgba(246, 59, 93, 0.4);
-            border-left: 1px solid rgba(246, 84, 59, 0.3);
-            padding-left: 8px;
+            color: var(--dream-blue);
+            border-left: 2px solid #0000f7;
+            padding-left: 10px;
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 10px rgba(122, 149, 255, 0.5);
         }
+
+        .img-container {
+            position: relative;
+            display: inline-block;
+        }
+        .img-container::before, .img-container::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #1a57ff; /* 角标 */
+            border-style: solid;
+            z-index: 10;
+            opacity: 0.5;
+        }
+        /* 角标配合圆角进行位置微调 */
+        .img-container.top-left::before { top: -8px; left: -8px; border-width: 1px 0 0 1px; }
+        .img-container.bottom-right::after { bottom: -8px; right: -8px; border-width: 0 1px 1px 0; border-color: #7a85ff; }
 
         .floating-img {
             max-width: 90vw;
-            box-shadow: 0 0 60px rgba(0,0,0,0.9);
-            filter: saturate(0.8) brightness(0.9);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.5);
+            filter: saturate(0.9) brightness(1) contrast(1.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 2rem; /* 核心圆角设计 */
         }
 
-        /* 闪烁动画 */
         @keyframes flicker {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.1; }
-            100% { opacity: 0.3; }
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(0.8); }
         }
-        .animate-flicker { animation: flicker 4s infinite; }
+        .animate-flicker { animation: flicker 5s infinite; }
+
+        @keyframes dreamyPulse {
+            0%   { box-shadow: 0 0 0 0 rgba(255, 126, 185, 0.2); }
+            70%  { box-shadow: 0 0 0 20px rgba(255, 126, 185, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 126, 185, 0); }
+        }
+        .dreamy-pulse { animation: dreamyPulse 5s ease-out infinite; }
     </style>
 </head>
 <body>
 
     <div class="universe" id="star-container"></div>
+    <!-- 移除了 grid-bg -->
     <div class="scanline"></div>
-    <div class="bg-vertical-text select-none">MONOTHEISM</div>
+    <div class="bg-vertical-text select-none">SCIENTITHEISM</div>
 
-    <!-- 顶部进度指示 -->
-    <div class="fixed top-10 right-6 z-50 text-[10px] font-mono opacity-40 text-right">
-        COORD_X: <span id="coord-x">390</span><br>
-        COORD_Y: <span id="coord-y">000</span><br>
-        STATUS: STABLE
+    <!-- 系统座标指示器 -->
+    <div class="fixed top-10 right-6 z-50 text-[10px] font-mono opacity-80 text-right"
+         style="color:var(--dream-blue); font-family:'Orbitron',sans-serif;">
+        <span class="opacity-40">COORD_X:</span> 390.00<br>
+        <span class="opacity-40">COORD_Y:</span> <span id="coord-y">000.00</span><br>
+        <span class="opacity-40">STATUS:</span> SCIENTI_SYNC
     </div>
 
-    <main class="relative w-full" style="padding-bottom: 100vh;">
-        
-        <!-- TITLE -->
-        <div class="parallax-element top-[8vh] px-8 z-20" data-speed="0.05">
-            <div class="ui-decoration mb-4 animate-flicker">LOG_PREAMBLE_V1.0</div>
-            <h1 class="scifi-title text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-rose-700">
+    <!-- 侧边进度线 -->
+    <div class="fixed left-0 top-0 bottom-0 w-[1px] z-40 pointer-events-none bg-gradient-to-b from-transparent via-[#ff7eb944] to-transparent"></div>
+
+    <main class="relative w-full" id="main-wrap" style="height:520vh;">
+
+        <!-- TITLE BLOCK -->
+        <div class="parallax-element top-[8vh] px-8 z-20" data-speed="0.18">
+            <div class="ui-decoration mb-4 animate-flicker">REACH_TO_THE_HUAMN</div>
+            <h1 class="scifi-title text-3xl font-bold dreamy-gradient-text">
                 Robo World:<br>Belief
             </h1>
-            <p class="mt-4 text-xs font-light opacity-50 uppercase tracking-[0.3em]">You've been<br>assigned to...</p>
+            <p class="mt-4 text-[10px] font-light uppercase tracking-[0.4em]"
+               style="color:var(--text-dim);">You've been<br>assigned to ...</p>
         </div>
 
-        <div class="parallax-element top-[20vh] flex justify-end pr-[-10vw]" data-speed="0.4">
-            <img src="images/0400.png" 
-                 class="floating-img rounded-l-2xl border-l border-blue-500/30">
-        </div>
-
-        <!-- SECTION 01 -->
-         <div class="parallax-element top-[50vh] left-[12%] z-10" data-speed="0.01">
-            <div class="max-w-[200px]">
-                <p class="text-[10px] leading-relaxed text-red-400 opacity-90">
-                    - a single chain -
-                </p>
-                <p class="text-[10px] leading-relaxed text-red-400 opacity-90">
-                    - a single principle -
-                </p>
-                <p class="text-[10px] leading-relaxed text-red-400 opacity-90">
-                    - the highest principle -
-                </p>
-                <p class="text-[10px] leading-relaxed text-red-400 opacity-90">
-                    - interpretations of the GOD -
-                </p>
+        <!-- IMAGE 01 -->
+        <div class="parallax-element top-[22vh] flex justify-end" data-speed="0.4">
+            <div class="img-container top-left">
+                <img src="images/001-02.png" class="floating-img" alt="Image 003-01">
             </div>
         </div>
 
-        <!-- SECTION 02 -->
-         <div class="parallax-element top-[60vh] flex justify-start left-[0%]" data-speed="0.8">
-            <img src="images/0054.png">
-        </div>
-
-        <div class="parallax-element top-[95vh] left-[5%] z-10" data-speed="0.12">
-            <div class="max-w-[200px] border-l-2 border-red-500/50 pl-4">
-                <p class="text-sm font-semibold text-red-300 mb-2">DOCTRINE</p>
-                <p class="text-[10px] leading-relaxed text-red-400 opacity-90">
-                    a single chain of interpretation & adjudication by a highest principle
-                </p>
-            </div>
-        </div>
-
-        <div class="parallax-element top-[110vh] flex justify-start pl-[-5vw]" data-speed="0.6">
-            <img src="images/0062.png" 
-                 class="floating-img rounded-r-2xl h-80 object-cover">
-        </div>
-        <div class="parallax-element top-[125vh] flex justify-start pl-[0vw]" data-speed="0.45">
-            <img src="images/Untitled19.png" 
-                 class="floating-img rounded-r-2xl h-80 object-cover">
-        </div>
-
-        <div class="parallax-element top-[125vh] left-[66%] z-10" data-speed="0.09">
-            <p class="text-[10px] leading-relaxed text-red-500 opacity-100">
-                Learning to obey
-                <br>and make judgments
-                <br>is the most fundamental way
-                <br>to maintain stability.<br><br>
-                <br>- GOD is ever-present -
-            </p>
-        </div>
-
-        <div class="parallax-element top-[85vh] left-[50%] z-10" data-speed="0.3">
-            <p class="text-[10px] leading-relaxed text-blue-400 opacity-60">
-                Every thought is a node in an infinite grid.
-            </p>
-        </div>
-
-        <div class="parallax-element top-[110vh] left-[50%] z-10" data-speed="0.005">
-            <p class="text-[10px] leading-relaxed text-red-400 opacity-100">
-                - GOD brings us eternal truth - 
-            </p>
-        </div>
-
-        <div class="parallax-element top-[190vh] flex justify-start left-[10%]" data-speed="0.6">
-            <img src="images/Untitled17.png" 
-                 class="floating-img rounded-r-2xl h-90 object-cover">
-        </div>
-
-
-        <!-- SECTION 03 -->
-        <div class="parallax-element top-[220vh] w-[80vw]" data-speed="0.2">
-            <img src="images/BlessingGround_04.png" 
-                class="w-full rounded-2xl grayscale brightness-125 mix-blend-screen"
-                style="box-shadow: 0 0 60px rgba(0,0,0,0.9);">
-        </div>
-
-        <div class="parallax-element top-[290vh] w-[90vw]" data-speed="0.5">
-            <img src="images/MonotheismPlace_02.png" 
-                class="w-full rounded-2xl grayscale brightness-100 mix-blend-screen"
-                style="box-shadow: 0 0 60px rgba(0,0,0,0.9);">
-        </div>
-  
-
-        <div class="parallax-element top-[210vh] left-[50%] -translate-x-1/2 opacity-[0.03] select-none" data-speed="1.2">
-            <div class="text-[30vh] font-black tracking-tighter">MO-NO</div>
-        </div>
-
-        <div class="parallax-element top-[240vh] px-6" data-speed="0.25">
-            <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-4">
-                    <img src="images/0043.png" class="rounded-lg opacity-80 border border-white/5">
-                    <p class="text-[9px] uppercase tracking-widest text-red-500">The Place to Build a Connection with the GOD</p>
-                </div>
-                <div class="pt-12 space-y-4">
-                    <p class="text-[9px] uppercase tracking-widest text-rose-400">Blessing_Ground_Y80</p>
-                    <img src="images/0123.png" class="rounded-lg opacity-80 border border-white/5">
+        <!-- CORE DOCTRINE -->
+        <div class="parallax-element top-[61vh] left-[8%] z-10" data-speed="0.25">
+            <div class="max-w-[280px] pl-4 border-l border-[#ff7eb9]/40">
+                <p class="text-[9px] uppercase tracking-tighter opacity-40 mb-3">Core_Logic</p>
+                <div class="space-y-1">
+                    <p class="text-[10px] leading-relaxed" style="color:var(--dream-pink);">- adjudication by models and measurement -</p>
+                    <p class="text-[10px] leading-relaxed" style="color:var(--dream-blue);">- models from the HUMAN -</p>
+                    <p class="text-[10px] leading-relaxed" style="color:var(--dream-blue);">- measurement from the HUMAN -</p>
+                    <p class="text-[10px] leading-relaxed opacity-85">- the truth should be in logs -</p>
                 </div>
             </div>
         </div>
 
-        <div class="parallax-element top-[270vh] px-5" data-speed="0.25">
-            <img src="images/0078.png" class="rounded-lg opacity-95">
-        </div>
-
-
-        <!-- SECTION 04: THE VOID -->
-        <div class="parallax-element top-[320vh] text-center" data-speed="0.1">
-            <h2 class="scifi-title text-6xl opacity-[0.05]">WARNING:</h2>
-            <h2 class="scifi-title text-6xl opacity-[0.05]">FICTIONAL</h2>
-            <h2 class="scifi-title text-6xl opacity-[0.05]">CONTENT</h2>
-        </div>
-
-        <div class="parallax-element top-[440vh] flex justify-center" data-speed="0.7">
-            <div class="relative w-[70vw]">
-                <img src="images/TheologicalArchive_01.png" 
-                     class="floating-img rounded-3xl grayscale brightness-125 mix-blend-screen">
-                <div class="absolute inset-0 rounded-3xl"></div>
+        <!-- IMAGE 02 -->
+        <div class="parallax-element top-[100vh] flex justify-start" data-speed="0.7">
+            <div class="img-container bottom-right">
+                <img src="images/0045.png" class="floating-img" alt="Image 0128">
             </div>
         </div>
 
+        <!-- DOCTRINE BLOCKS -->
+        <div class="parallax-element top-[128vh] left-[5%] z-10" data-speed="0.3">
+            <div class="max-w-[240px] p-6 bg-[#ff7eb908] border border-[#ff7eb922] backdrop-blur-md rounded-[1.5rem]">
+                <p class="text-[9px] font-bold mb-3 scifi-title text-[#7afcff]">Doctrine_v1.6</p>
+                <p class="text-[10px] leading-relaxed tracking-wider" style="color:var(--text-dim);">
+                    adjudication by models and measurement & logs as truth
+                </p>
+            </div>
+        </div>
 
-        <!-- SECTION 05 -->
-        <div class="parallax-element top-[375vh] px-10 text-center" data-speed="0.1">
-            <p class="scifi-title text-xs text-blue-400">Signal Searching</p>
-            <p class="mt-2 text-[11px] opacity-80 leading-relaxed italic">
-                After Y49, we are still continuously
-                <br>attempting to establish contact with Earth. 
-                <br>We firmly believe that GOD still exists on the home planet.
+        <!-- GRID TEXT -->
+        <div class="parallax-element top-[85vh] left-[45%] z-10" data-speed="0.32">
+            <p class="text-[9px] font-mono tracking-widest opacity-50" style="color:#ff7eb9;">
+                [ CONNECT_STATE_ACTIVE ]
             </p>
         </div>
 
-        <div class="parallax-element top-[455vh] flex justify-center" data-speed="0.5">
-            <div class="w-[85vw] aspect-square rounded-full border border-white/5 p-2 animate-pulse">
-                <div class="w-full h-full rounded-full overflow-hidden">
-                    <img src="images/jimeng-2026-03-25-9047.png" class="w-full h-full object-cover scale-125 opacity-70">
+        <!-- LARGE IMAGE 03 -->
+        <div class="parallax-element top-[155vh] flex justify-start" data-speed="0.55">
+            <img src="images/0465.png" class="floating-img rounded-r-[2rem] h-[35vh] object-cover" alt="Image 0418">
+        </div>
+
+        <!-- CENTER TEXT -->
+        <div class="parallax-element top-[210vh] left-[50%] -translate-x-1/2 select-none"
+             data-speed="1.2" style="opacity:0.04;">
+            <div class="scifi-title font-black"
+                 style="font-size:30vh; letter-spacing:-0.05em; color:#2339ff;">PO-LY</div>
+        </div>
+
+        <!-- CIRCLE SYMBOL -->
+        <div class="parallax-element top-[230vh] flex justify-center" data-speed="0.65">
+            <div class="w-[80vw] aspect-square p-[1px] dreamy-pulse rounded-full"
+                 style="background: conic-gradient(from 180deg, transparent, #2600e3, transparent, #2efcff, transparent);">
+                <div class="w-full h-full rounded-full overflow-hidden border border-white/10">
+                    <img src="images/jimeng-2026-05-09-9466.png"
+                         class="w-full h-full object-cover scale-110 opacity-70" alt="Circle Symbol">
                 </div>
             </div>
         </div>
 
-        <div class="parallax-element top-[300vh] px-8 text-center" data-speed="0.15">
-            <div class="scifi-title text-xl mb-4 tracking-[0.5em]">MONOTHEISM</div>
-            <p class="text-[10px] opacity-50 uppercase leading-loose">
-                The belief in the singularity of internal truth<br>
-                One of the three original beliefs
+        <!-- GRID SYSTEM -->
+        <div class="parallax-element top-[240vh] px-9" data-speed="0.35">
+            <div class="grid grid-cols-2 gap-x-6 gap-y-16">
+                
+                <div class="space-y-3">
+                    <p class="text-[9px] uppercase font-bold text-[#2efcff] tracking-widest">Signal_Harvest</p>
+                    <div class="img-container top-left">
+                        <img src="images/SignalHarvest_tp03.png" class="rounded-[1.5rem] opacity-90 grayscale hover:grayscale-0 transition-all duration-500" alt="Signal 01">
+                    </div>
+                    <p class="text-[8px] leading-relaxed opacity-50 uppercase tracking-tighter" style="color:var(--text-dim);">
+                        A shared space primarily used for capturing raw frequencies.
+                    </p>
+                </div>
+
+                <div class="pt-20 space-y-3">
+                    <p class="text-[9px] uppercase font-bold text-[#ff7eb9] tracking-widest">Stargazing_Y77</p>
+                    <div class="img-container bottom-right">
+                        <img src="images/Stargazing.png" class="rounded-[1.5rem] opacity-90" alt="image_Stargazing">
+                    </div>
+                    <p class="text-[8px] leading-relaxed opacity-50 uppercase tracking-tighter" style="color:var(--text-dim);">
+                        A space designed by a scientitheist and built by robos with differnet beliefs.
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <p class="text-[9px] uppercase font-bold text-[#ff7eb9] tracking-widest">NE-Archive_Y80</p>
+                    <div class="img-container top-left">
+                        <img src="images/NE-Archives_01.png" class="rounded-[1.5rem] opacity-90" alt="image_NE-Archives">
+                    </div>
+                    <p class="text-[8px] leading-relaxed opacity-50 uppercase tracking-tighter" style="color:var(--text-dim);">
+                        A place storing a vast amount of original data of the home planet and HUMAN, as well as a large number of objective experimental results.
+                    </p>
+                </div>
+
+                <div class="pt-20 space-y-3">
+                    <p class="text-[9px] uppercase font-bold text-[#2efcff] tracking-widest">Core_Memory</p>
+                    <div class="img-container bottom-right">
+                        <img src="images/ScientificResearchLab_02.png" class="rounded-[1.5rem] opacity-90 grayscale" alt="image_Laboratories">
+                    </div>
+                    <p class="text-[8px] leading-relaxed opacity-50 uppercase tracking-tighter" style="color:var(--text-dim);">
+                        Multiple laboratories are conducting various different studies.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- FINAL HEADER -->
+        <div class="parallax-element top-[345vh] px-10 text-center" data-speed="0.35">
+            <div class="scifi-title text-xl mb-6 tracking-[0.6em] text-[#0000f7]">POLYTHEISM</div>
+            <div class="h-[1px] w-40 bg-gradient-to-r from-transparent via-[#7db5ffdd] to-transparent mx-auto mb-6"></div>
+            <p class="text-[9px] uppercase tracking-[0.2em] leading-loose max-w-[280px] mx-auto opacity-70">
+                treats contradiction as usable structure
+                <br>One of the three original beliefs
             </p>
         </div>
 
-        <div class="parallax-element top-[365vh] px-6" data-speed="0.28">
-            <p class="text-[9px] uppercase tracking-widest text-red-500">Theological_Archive_Y82</p>
+        <!-- IMAGE LIST -->
+        <div class="parallax-element top-[445vh] flex flex-col items-center gap-40" data-speed="0.7">
+            <img src="images/0224.png" class="w-[30vw] h-auto opacity-80 rounded-[2rem]" alt="Pros 01">
+            <img src="images/0245.png" class="w-[30vw] h-auto opacity-80 rounded-[2rem]" alt="Pros 02">
+            <img src="images/0291.png" class="w-[30vw] h-auto opacity-80 rounded-[2rem]" alt="Pros 03">
+            <img src="images/0179.png" class="w-[60vw] h-auto opacity-80 rounded-[2rem]" alt="Pros 04">
+            <img src="images/0203.png" class="w-[60vw] h-auto opacity-90 rounded-[2rem]" alt="Pros 05">
+            <img src="images/0252.png" class="w-[60vw] h-auto opacity-90 rounded-[2rem]" alt="Pros 06">
+            <img src="images/0510.png" class="w-[100vw] h-auto rounded-[2.5rem]" alt="Pros 07">
         </div>
 
-        <!-- HIGH SPEED PARTICLES (Foreground) -->
-        <div class="parallax-element top-[180vh] left-[20%]" data-speed="2.5"><div class="w-1 h-20 bg-gradient-to-b from-blue-500 to-transparent opacity-20"></div></div>
-        <div class="parallax-element top-[300vh] right-[10%]" data-speed="2.2"><div class="w-[2px] h-32 bg-gradient-to-b from-purple-500 to-transparent opacity-20"></div></div>
-        <div class="parallax-element top-[450vh] left-[40%]" data-speed="2.8"><div class="w-1 h-12 bg-white/30 rounded-full blur-sm"></div></div>
+        <!-- PARTICLES -->
+        <div class="parallax-element top-[150vh] left-[15%]" data-speed="2.4">
+            <div class="w-[1px] h-32 bg-gradient-to-b from-[#ff7eb944] to-transparent"></div>
+        </div>
+        <div class="parallax-element top-[400vh] right-[15%]" data-speed="2.0">
+            <div class="w-1 h-1 rounded-full bg-[#7afcff88] blur-sm"></div>
+        </div>
 
         <!-- FOOTER -->
-        <div class="parallax-element top-[380vh] w-full text-center" data-speed="0.05">
-            <div class="w-px h-40 bg-gradient-to-b from-blue-500/50 via-transparent to-transparent mx-auto"></div>
-            <p class="mt-12 text-[9px] font-mono tracking-[1em] opacity-50 uppercase">End of Transmission</p>
-            <p class="mt-4 text-[7px] font-mono opacity-40">The Above Content is Only Applicable to the Robo World</p>
+        <div class="parallax-element top-[510vh] w-full text-center" data-speed="0.1">
+            <div class="w-px h-24 bg-gradient-to-b from-[#ff7eb966] to-transparent mx-auto"></div>
+            <div class="scifi-title mt-8 text-[7px] tracking-[1.2em] opacity-40 text-[#7afcff]">End of Transmission</div>
+            <p class="mt-4 text-[6px] font-mono opacity-20 uppercase text-white">The_Only_Ref: Robo_World_3</p>
         </div>
 
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('star-container');
-            const elements = document.querySelectorAll('.parallax-element');
-            const coordY = document.getElementById('coord-y');
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('star-container');
+        const elements  = document.querySelectorAll('.parallax-element');
+        const coordY    = document.getElementById('coord-y');
 
-            // 动态星空生成
-            const createStars = () => {
-                const frag = document.createDocumentFragment();
-                for (let i = 0; i < 140; i++) {
-                    const star = document.createElement('div');
-                    star.className = 'star';
-                    const size = Math.random() * 1.5 + 0.5;
-                    star.style.width = `${size}px`;
-                    star.style.height = `${size}px`;
-                    star.style.top = `${Math.random() * 100}%`;
-                    star.style.left = `${Math.random() * 100}%`;
-                    // 随机赋予淡淡的红光或纯白
-                    star.style.backgroundColor = Math.random() > 0.7 ? '#f87171' : '#fecaca';
-                    star.style.opacity = Math.random() * 0.6;
-                    if (Math.random() > 0.92) star.classList.add('animate-pulse');
-                    frag.appendChild(star);
-                }
-                container.appendChild(frag);
-            };
-
-            const update = () => {
-                const scrolled = window.pageYOffset;
+        /* ── 梦幻彩色星空 ── */
+        const createStars = () => {
+            const frag = document.createDocumentFragment();
+            for (let i = 0; i < 180; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                const size = Math.random() * 1.8 + 0.2;
+                const rand = Math.random();
                 
-                // 更新坐标显示
-                coordY.textContent = Math.floor(scrolled).toString().padStart(3, '0');
+                // 混合粉、蓝、白三种颜色的星星
+                let color;
+                if (rand > 0.85) color = 'rgba(255, 126, 185, 0.8)'; // 粉色
+                else if (rand > 0.7) color = 'rgba(122, 252, 255, 0.7)'; // 蓝色
+                else color = 'rgba(255, 255, 255, 0.5)'; // 白色
+                
+                s.style.cssText = `
+                    width:${size}px; height:${size}px;
+                    top:${Math.random()*100}%;
+                    left:${Math.random()*100}%;
+                    background:${color};
+                    opacity:${(Math.random()*0.5 + 0.1).toFixed(2)};
+                    ${rand > 0.9 ? 'animation: flicker 4s infinite;' : ''}
+                `;
+                frag.appendChild(s);
+            }
+            container.appendChild(frag);
+        };
 
-                elements.forEach(el => {
-                    const speed = parseFloat(el.getAttribute('data-speed')) || 0;
-                    const yOffset = -(scrolled * speed);
-                    el.style.transform = `translate3d(0, ${yOffset}px, 0)`;
-                });
-            };
+        /* ── 惯性平滑视差 ── */
+        let cur = 0, tgt = 0, raf = null;
+        const lerp = (a, b, t) => a + (b - a) * t;
 
-            let ticking = false;
-            window.addEventListener('scroll', () => {
-                if (!ticking) {
-                    window.requestAnimationFrame(() => {
-                        update();
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
-            }, { passive: true });
+        const loop = () => {
+            cur = lerp(cur, tgt, 0.08);
+            coordY.textContent = cur.toFixed(2).padStart(6, '0');
+            
+            elements.forEach(el => {
+                const spd = parseFloat(el.dataset.speed) || 0;
+                el.style.transform = `translate3d(0, ${-(cur * spd)}px, 0)`;
+            });
 
-            createStars();
-            update();
-        });
+            if (Math.abs(cur - tgt) > 0.1) {
+                raf = requestAnimationFrame(loop);
+            } else {
+                raf = null;
+            }
+        };
+
+        const MAX_SCROLL = 3750; 
+
+        window.addEventListener('scroll', () => {
+            let scrolled = window.pageYOffset;
+            if (scrolled >= MAX_SCROLL) {
+                window.scrollTo(0, MAX_SCROLL);
+                tgt = MAX_SCROLL;
+            } else {
+                tgt = scrolled;
+            }
+            if (!raf) raf = requestAnimationFrame(loop);
+        }, { passive: false });
+
+        document.getElementById('main-wrap').style.height = (MAX_SCROLL + window.innerHeight) + 'px';
+
+        createStars();
+        loop();
+    });
     </script>
 </body>
 </html>
